@@ -1,54 +1,60 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:archive/archive_io.dart';
 import 'package:process_run/process_run.dart';
-import 'package:shortid/shortid.dart';
+// import 'package:shortid/shortid.dart';
 
-void testNewProject() async {
-  final id = shortid.generate();
-  final name = 'example';
-  String _result;
-  _result = await createNewProject(id, name);
-  _result = await runProjectById(id, name);
-  print(_result);
-}
+// void testNewProject() async {
+//   final id = shortid.generate();
+//   final name = 'example';
+//   String _result;
+//   _result = await createNewProject(id, name);
+//   final _archive = await buildProjectById(id);
+//   // print(_archive.length);
+// }
 
-Future<String> runProjectById(String id, String name) async {
-  var webPort = int.tryParse(Platform.environment['WEB_PORT'] ?? '3000');
+Future<Directory> buildProjectById(String id, [bool canvasKit = false]) async {
+  final _path = getProjectPath(id);
   String result = await runCommand(
     'flutter',
     [
-      'run',
-      '-d',
-      'web-server',
-      '--web-port',
-      '$webPort',
+      'build',
+      'web',
+      '--dart-define=FLUTTER_WEB_USE_EXPERIMENTAL_CANVAS_TEXT=$canvasKit',
     ],
     verbose: true,
-    workingDirectory: id,
+    workingDirectory: _path,
   );
-  result += await runCommand(
+  return Directory('$_path/build/web');
+}
+
+Future<Uint8List> archiveDirectory(Directory _dir) {
+  var encoder = ZipFileEncoder();
+  encoder.zipDirectory(_dir);
+  return File('${_dir.path}.zip').readAsBytes();
+}
+
+Future<Directory> runProjectById(String id, bool canvasKit) async {
+  final dir = await buildProjectById(id, canvasKit);
+  return dir;
+}
+
+Future<String> createNewProject(String id, String name) async {
+  final _path = getProjectPath(id);
+  final _dir = Directory(_path)..createSync();
+  final result = await runCommand(
     'flutter',
-    [
-      'create',
-      '--project-name',
-      name,
-      '.',
-    ],
+    ['create', '--project-name', name, '.'],
     verbose: true,
-    workingDirectory: id,
+    workingDirectory: _dir.path,
   );
   return result;
 }
 
-Future<String> createNewProject(String id, String name) async {
-  final result = await runCommand(
-    'flutter',
-    ['create', '--project-name', name, id],
-    verbose: true,
-  );
-  return result;
-}
+String getProjectPath(String id) => 'generated/projects/$id';
+bool projectExists(String id) => Directory(getProjectPath(id)).existsSync();
 
 Future<String> runCommand(
   String exc,

@@ -1,9 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:process_run/process_run.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
+import 'package:shelf_static/shelf_static.dart';
 import 'package:shortid/shortid.dart';
 
 import 'commands.dart';
@@ -16,7 +16,7 @@ class CompilerService {
   CompilerService();
   static Map<String, String> _projects = <String, String>{};
 
-  @Route.get('/')
+  @Route.get('/version')
   Future<Response> welcome(Request request) async {
     final dartResult = await runCommand(
       'dart',
@@ -64,23 +64,37 @@ class CompilerService {
     }
   }
 
-  @Route.get('/run/<id>')
-  Future<Response> runProject(Request request, String id) async {
+  Future<Response> runProject(
+    Request request,
+    String id, {
+    bool rebuild = false,
+    bool canvasKit = false,
+  }) async {
+    if (rebuild) {
+      final result = await runProjectById(id, canvasKit);
+    }
+    final _handler = createStaticHandler(
+      'generated',
+      defaultDocument: 'index.html',
+      serveFilesOutsidePath: false,
+    );
+    return _handler(request);
+  }
+
+  @Route.get('/compile/<id>')
+  @Route.get('/build/<id>')
+  Future<Response> compileProject(Request request, String id) async {
     if (_projects[id] == null) {
-      return Response.notFound('Project not created for $id!');
+      return Response.notFound('Project not built for $id!');
     }
     try {
       final name = _projects[id];
-      final result = await runProjectById(id, name);
-      final _output = <String, dynamic>{
-        'id': id,
-        'name': name,
-        'output': result,
-      };
-      if (result != null) {
+      final result = await buildProjectById(id);
+      final archive = await archiveDirectory(result);
+      if (archive != null) {
         return Response.ok(
-          json.encode(_output),
-          headers: {'Content-Type': 'application/json'},
+          archive,
+          headers: {'Content-Type': 'application/zip'},
         );
       }
       return Response.notFound('Error running project for $name!');
