@@ -2,8 +2,6 @@
 
 - Using Docker and Cloud Run
 - REST Interface for CLI commands
-- WIP Running application
-- WIP Build and download zip
 
 # Example
 
@@ -17,4 +15,4 @@ Building the project:
 
 Running the project:
 
-[URL]/build/[PROJECT_ID]/build/web/
+[URL]/projects/[PROJECT_ID]/build/web/

@@ -81,9 +81,8 @@ class CompilerService {
     return _handler(request);
   }
 
-  @Route.get('/compile/<id>')
   @Route.get('/build/<id>')
-  Future<Response> compileProject(Request request, String id) async {
+  Future<Response> buildProject(Request request, String id) async {
     if (_projects[id] == null) {
       return Response.notFound('Project not built for $id!');
     }
@@ -104,6 +103,29 @@ class CompilerService {
       return Response.ok(error);
     }
   }
+
+  // @Route.get('/compile/<id>')
+  // Future<Response> compileProject(Request request, String id) async {
+  //   if (_projects[id] == null) {
+  //     return Response.notFound('Project not built for $id!');
+  //   }
+  //   try {
+  //     final name = _projects[id];
+  //     final result = await buildProjectById(id);
+  //     final archive = await archiveDirectory(result);
+  //     if (archive != null) {
+  //       return Response.ok(
+  //         archive,
+  //         headers: {'Content-Type': 'application/zip'},
+  //       );
+  //     }
+  //     return Response.notFound('Error running project for $name!');
+  //   } catch (e) {
+  //     final error = 'Error: $e';
+  //     print(error);
+  //     return Response.ok(error);
+  //   }
+  // }
 
   // Create router using the generate function defined in 'compiler.g.dart'.
   Router get router => _$CompilerServiceRouter(this);
