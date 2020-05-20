@@ -1,0 +1,1 @@
+flutter pub global run aqueduct db upgrade --connect postgres://heroes_user:password@localhost:5432/heroes

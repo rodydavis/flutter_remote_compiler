@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Aqueduct OpenAPI Client</title>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@3.12.1/swagger-ui.css">
+</head>
+
+<body>
+<div id="swagger-ui"></div>
+<script src="https://unpkg.com/swagger-ui-dist@3.12.1/swagger-ui-standalone-preset.js"></script>
+<script src="https://unpkg.com/swagger-ui-dist@3.12.1/swagger-ui-bundle.js"></script>
+<script>
+    window.onload = function() {       
+        const ui = SwaggerUIBundle({
+            spec: {"openapi":"3.0.0","info":{"title":"flutter_remote_compiler","description":"An empty Aqueduct application.","version":"0.0.1"},"servers":[{"url":"http://localhost:8888"}],"paths":{"/heroes":{"parameters":[],"get":{"tags":["Heroes"],"operationId":"getAllHeroes","parameters":[],"responses":{"200":{"description":"Successful response."}}}},"/heroes/{id}":{"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"get":{"tags":["Heroes"],"operationId":"getHeroByID","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer"}}],"responses":{"200":{"description":"Successful response."}}}},"/example":{"parameters":[]}},"components":{"schemas":{"Hero":{"title":"Hero","type":"object","properties":{"id":{"title":"id","type":"integer","description":"This is the primary identifier for this object.\n","nullable":false},"name":{"title":"name","type":"string","description":"No two objects may have the same value for this field.\n","nullable":false}},"description":""}},"responses":{},"parameters":{},"requestBodies":{},"headers":{},"securitySchemes":{},"callbacks":{}}},
+            dom_id: '#swagger-ui',
+            deepLinking: true,
+            presets: [
+                SwaggerUIBundle.presets.apis,
+                SwaggerUIStandalonePreset
+            ],
+            plugins: [
+                SwaggerUIBundle.plugins.DownloadUrl
+            ],
+            layout: "StandaloneLayout",
+        })
+        window.ui = ui
+    }
+</script>
+</body>
+
+</html>
+    
