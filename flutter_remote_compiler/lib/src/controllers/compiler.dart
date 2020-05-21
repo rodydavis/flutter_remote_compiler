@@ -3,6 +3,7 @@ import 'package:flutter_remote_compiler/src/classes/project_dir.dart';
 
 class CompilerController extends ResourceController {
   @Operation.get('id')
+  @Operation.post('id')
   Future<Response> build(
     @Bind.path('id') String id, {
     @Bind.query('skia') bool canvasKit = false,

@@ -34,6 +34,20 @@ class ProjectController extends ResourceController {
     });
   }
 
+  @Operation.put('id')
+  Future<Response> updateProject(
+      @Bind.path('id') String id, @Bind.body() Project inputProject) async {
+    final _project = ProjectDir.fromID(id);
+    await _project.updatePubspec(
+      dependencies: inputProject?.dependencies,
+      description: inputProject?.description,
+    );
+    if (inputProject?.files != null) {
+      _project.setProjectFiles(inputProject.files);
+    }
+    return Response.ok(await _project.toJson());
+  }
+
   @Operation.post()
   Future<Response> createProject(
       @Bind.body(ignore: ["id"]) Project inputProject) async {
