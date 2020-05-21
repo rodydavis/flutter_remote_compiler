@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Aqueduct OpenAPI Client</title>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@3.12.1/swagger-ui.css">
+</head>
+
+<body>
+<div id="swagger-ui"></div>
+<script src="https://unpkg.com/swagger-ui-dist@3.12.1/swagger-ui-standalone-preset.js"></script>
+<script src="https://unpkg.com/swagger-ui-dist@3.12.1/swagger-ui-bundle.js"></script>
+<script>
+    window.onload = function() {       
+        const ui = SwaggerUIBundle({
+            spec: {"openapi":"3.0.0","info":{"title":"flutter_remote_compiler","description":"An empty Aqueduct application.","version":"0.0.1"},"servers":[{"url":"http://localhost:8888"}],"paths":{"/projects":{"parameters":[],"post":{"tags":["Project"],"operationId":"createProject","parameters":[],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Project"}}}},"responses":{"200":{"description":"Successful response."}}}},"/projects/{id}":{"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"get":{"tags":["Project"],"operationId":"getProjectByID","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"Successful response."}}},"delete":{"tags":["Project"],"operationId":"deleteProjectByID","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"Successful response."}}}},"/projects/{id}/build":{"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"get":{"tags":["Compiler"],"operationId":"build","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}},{"name":"skia","in":"query","required":false,"allowEmptyValue":true,"schema":{"type":"boolean"}},{"name":"profile","in":"query","required":false,"allowEmptyValue":true,"schema":{"type":"boolean"}},{"name":"archive","in":"query","required":false,"allowEmptyValue":true,"schema":{"type":"boolean"}}],"responses":{"200":{"description":"Successful response."}}}},"/projects/{id}/files":{"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"post":{"tags":["ProjectFiles"],"operationId":"updateFiles","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/ProjectFile"}}}}},"responses":{"200":{"description":"Successful response."}}}},"/projects/{id}/info":{"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"get":{"tags":["ProjectStats"],"operationId":"getInfo","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"Successful response."}}}},"/projects/{id}/run/{path}":{"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}},{"name":"path","description":"This path variable may contain slashes '/' and may be empty.","in":"path","required":true,"schema":{"type":"string"}}]}},"components":{"schemas":{"Project":{"title":"Project","type":"object","additionalProperties":true,"properties":{"id":{"title":"id","type":"string"},"name":{"title":"name","type":"string"},"organization":{"title":"organization","type":"string"},"description":{"title":"description","type":"string"}},"description":"Failed to auto-document type 'Project': Invalid argument(s): Unsupported type 'DependencyReference' for 'APIComponentDocumenter.documentType'."},"ProjectFile":{"title":"ProjectFile","type":"object","properties":{"source":{"title":"source","type":"string"},"path":{"title":"path","type":"string"}}}},"responses":{},"parameters":{},"requestBodies":{},"headers":{},"securitySchemes":{},"callbacks":{}}},
+            dom_id: '#swagger-ui',
+            deepLinking: true,
+            presets: [
+                SwaggerUIBundle.presets.apis,
+                SwaggerUIStandalonePreset
+            ],
+            plugins: [
+                SwaggerUIBundle.plugins.DownloadUrl
+            ],
+            layout: "StandaloneLayout",
+        })
+        window.ui = ui
+    }
+</script>
+</body>
+
+</html>
+    

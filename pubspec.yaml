@@ -1,20 +1,19 @@
-name: hello_world_dart
-publish_to: none # let's not accidentally publish this to pub.dartlang.org
+name: flutter_remote_compiler
+description: An empty Aqueduct application.
+version: 0.0.1
+author: stable|kernel <jobs@stablekernel.com>
 
 environment:
-  sdk: ">=2.6.0 <3.0.0"
+  sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  shelf: ^0.7.3
-  shelf_router: ^0.7.2
-  process_run: any
-  shortid: ^0.1.1
-  archive: ^2.0.13
-  shelf_static: ^0.2.8
-  path: ^1.7.0
-  mime: ^0.9.6+3
-  http_parser: ^3.1.4
+  aqueduct: 3.3.0+1
   pubspec: ^0.1.4
+  process_run: ^0.10.10+1
+  shortid: ^0.1.1
+  recase: ^3.0.0
+  archive: ^2.0.13
+
 dev_dependencies:
-  shelf_router_generator: ^0.7.0+1
-  build_runner: ^1.3.1
+  test: ^1.0.0
+  aqueduct_test: ^1.0.0
