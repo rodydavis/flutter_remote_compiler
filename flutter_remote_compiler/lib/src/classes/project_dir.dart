@@ -1,10 +1,11 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:archive/archive_io.dart';
 import 'package:flutter_remote_compiler/src/utils/run_command.dart';
 import 'package:pubspec/pubspec.dart';
 import 'package:shortid/shortid.dart';
+
+import 'project_file.dart';
 
 class ProjectDir {
   ProjectDir(this.directory);
@@ -37,11 +38,15 @@ class ProjectDir {
   Future<void> setPubspec(PubSpec val) => val.save(directory);
   Future<void> updatePubspec({
     String name,
+    String description,
     Map<String, DependencyReference> dependencies,
   }) async {
     PubSpec _current = await getPubspec();
     if (name != null) {
       _current = _current.copy(name: name);
+    }
+    if (description != null) {
+      _current = _current.copy(description: description);
     }
     if (dependencies != null) {
       _current = _current.copy(dependencies: dependencies);
@@ -53,24 +58,22 @@ class ProjectDir {
 
   List<FileSystemEntity> getFiles() => directory.listSync(recursive: true);
 
-  Future<void> create(String name) async {
+  Future<void> create(String name, {String org = 'com.example'}) async {
     if (!exists) {
       await directory.create();
     }
-    final config = await runCommand(
+    await runCommand(
       'flutter',
       ['config', '--enable-web', 'true'],
       verbose: true,
       workingDirectory: path,
     );
-    print(config);
-    final result = await runCommand(
+    await runCommand(
       'flutter',
-      ['create', '--project-name', name, '.'],
+      ['create', '--project-name', name, '--org', org, '.'],
       verbose: true,
       workingDirectory: path,
     );
-    print(result);
     final List<Directory> _toRemove = [];
     _toRemove.add(Directory('$path/ios'));
     _toRemove.add(Directory('$path/android'));
@@ -86,36 +89,54 @@ class ProjectDir {
     }
   }
 
-  Future<void> build({bool canvasKit = false}) async {
-    final result = await runCommand(
+  Future<void> build({
+    bool canvasKit = false,
+    bool profile = false,
+  }) async {
+    await runCommand(
       'flutter',
       [
         'build',
         'web',
+        '--${profile ? 'profile' : 'release'}',
         '--dart-define=FLUTTER_WEB_USE_EXPERIMENTAL_CANVAS_TEXT=$canvasKit',
       ],
       verbose: true,
       workingDirectory: path,
     );
-    print(result);
   }
 
-  Future<Uint8List> archive({
-    bool canvasKit = false,
-    bool wholeProject = false,
-  }) async {
+  Future<File> updateFile(String relativePath, List<int> bytes) async {
+    final _file = File('generated/$id/$relativePath');
+    if (!_file.existsSync()) {
+      await _file.create(recursive: true);
+    }
+    return _file.writeAsBytes(bytes);
+  }
+
+  Future<File> archive({bool wholeProject = false}) async {
     Directory _dir;
     if (wholeProject) {
       _dir = directory;
     } else {
       _dir = Directory('$path/build/web');
       if (!_dir.existsSync()) {
-        await build(canvasKit: canvasKit);
+        return null;
       }
     }
     final encoder = ZipFileEncoder();
     encoder.zipDirectory(_dir);
-    return File('${_dir.path}.zip').readAsBytes();
+    return File('${_dir.path}.zip');
+  }
+
+  void  setProjectFiles(List<ProjectFile> files) {
+    for (final file in files) {
+      final _file = File('$path/${file.path}');
+      if (!_file.existsSync()) {
+        _file.createSync(recursive: true);
+      }
+      _file.writeAsStringSync(file.source);
+    }
   }
 
   Future<Map<String, dynamic>> toJson() async {

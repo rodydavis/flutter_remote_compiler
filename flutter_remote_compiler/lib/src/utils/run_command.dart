@@ -3,13 +3,13 @@ import 'package:process_run/process_run.dart';
 Future<String> runCommand(
   String exc,
   List<String> args, {
-  bool verbose = false,
+  bool verbose = true,
   String workingDirectory,
 }) async {
   final result = await run(
     exc,
     args,
-    verbose: true,
+    verbose: verbose,
     workingDirectory: workingDirectory,
   );
   String _output = '';
@@ -21,6 +21,8 @@ Future<String> runCommand(
   if (stderr != null && stderr.toString().isNotEmpty) {
     _output = stderr.toString();
   }
-  print(_output);
+  if (verbose) {
+    print(_output);
+  }
   return _output;
 }

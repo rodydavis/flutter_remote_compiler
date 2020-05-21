@@ -3,12 +3,9 @@ import 'package:flutter_remote_compiler/src/classes/project.dart';
 import 'package:flutter_remote_compiler/src/classes/project_dir.dart';
 
 class ProjectController extends ResourceController {
-  ProjectController(this.context);
-
-  final ManagedContext context;
-
+  /// Testing Purposes only
   @Operation.get()
-  Future<Response> getAllProjects({@Bind.query('name') String name}) async {
+  Future<Response> getAllProjects() async {
     final _directory = Directory('generated');
     final List<Map<String, dynamic>> _projects = [];
     final _dirs = _directory.listSync().whereType<Directory>().toList();
@@ -38,7 +35,10 @@ class ProjectController extends ResourceController {
   Future<Response> createProject(
       @Bind.body(ignore: ["id"]) Project inputProject) async {
     final _project = ProjectDir.generate();
-    await _project.create(inputProject.name);
+    await _project.create(
+      inputProject.name,
+      org: inputProject.organization,
+    );
     return Response.ok(await _project.toJson());
   }
 }

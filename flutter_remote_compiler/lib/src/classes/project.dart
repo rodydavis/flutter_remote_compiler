@@ -1,17 +1,57 @@
 import 'package:flutter_remote_compiler/flutter_remote_compiler.dart';
+import 'package:pubspec/pubspec.dart';
 
-class Project extends ManagedObject<_Project> implements _Project {}
+class Project extends Serializable {
+  Project({
+    this.id,
+    this.name,
+    this.organization,
+    this.description,
+    this.dependencies,
+  });
 
-class _Project {
-  @primaryKey
-  int id;
-
-  @Column(indexed: true)
+  String id;
   String name;
-
-  @Column(nullable: true)
   String organization;
-
-  @Column(nullable: true)
   String description;
+  Map<String, DependencyReference> dependencies;
+
+  @override
+  Map<String, dynamic> asMap() {
+    return {
+      'id': id,
+      'name': name,
+      'organization': organization,
+      'description': description,
+      'dependencies': dependencies?.map((key, value) {
+        final _value = value.toJson();
+        return MapEntry(key, _value);
+      }),
+    };
+  }
+
+  @override
+  void readFromMap(Map<String, dynamic> object) {
+    name = 'Example';
+    organization = 'com.example';
+    description = 'A new Flutter Project.';
+    if (object['id'] != null) {
+      id = object['id'] as String;
+    }
+    if (object['name'] != null) {
+      name = object['name'] as String;
+    }
+    if (object['organization'] != null) {
+      organization = object['organization'] as String;
+    }
+    if (object['description'] != null) {
+      description = object['description'] as String;
+    }
+    if (object['dependencies'] != null) {
+      final _json = object['dependencies'] as Map<String, dynamic>;
+      dependencies = _json.map<String, DependencyReference>((key, value) {
+        return MapEntry(key, DependencyReference.fromJson(value));
+      });
+    }
+  }
 }
