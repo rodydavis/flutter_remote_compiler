@@ -1,18 +1,21 @@
-# Flutter Remote Compiler
+# flutter_remote_compiler
 
-- Using Docker and Cloud Run
-- REST Interface for CLI commands
+## Running the Application Locally
 
-# Example
+Run `aqueduct serve` from this directory to run the application. For running within an IDE, run `bin/main.dart`. By default, a configuration file named `config.yaml` will be used.
 
-Creating the project:
+To generate a SwaggerUI client, run `aqueduct document client`.
 
-[URL]/create/[PROJECT_NAME]
+## Running Application Tests
 
-Building the project:
+To run all tests for this application, run the following in this directory:
 
-[URL]/build/[PROJECT_ID]
+```
+pub run test
+```
 
-Running the project:
+The default configuration file used when testing is `config.src.yaml`. This file should be checked into version control. It also the template for configuration files used in deployment.
 
-[URL]/projects/[PROJECT_ID]/build/web/
+## Deploying an Application
+
+See the documentation for [Deployment](https://aqueduct.io/docs/deploy/).
