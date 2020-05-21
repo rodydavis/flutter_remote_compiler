@@ -1,3 +1,5 @@
+import 'package:flutter_remote_compiler/src/controllers/project.dart';
+
 import 'flutter_remote_compiler.dart';
 import 'src/controllers/heroes.dart';
 
@@ -7,7 +9,8 @@ class FlutterRemoteCompilerChannel extends ApplicationChannel {
   @override
   Future prepare() async {
     logger.onRecord.listen(
-        (rec) => print("$rec ${rec.error ?? ""} ${rec.stackTrace ?? ""}"));
+      (rec) => print("$rec ${rec.error ?? ""} ${rec.stackTrace ?? ""}"),
+    );
 
     final config = HeroConfig(options.configurationFilePath);
     final dataModel = ManagedDataModel.fromCurrentMirrorSystem();
@@ -25,7 +28,13 @@ class FlutterRemoteCompilerChannel extends ApplicationChannel {
   Controller get entryPoint {
     final router = Router();
 
+    router
+        .route("/projects/:id/build/web/*")
+        .link(() => FileController("generated/"));
+
     router.route('/heroes/[:id]').link(() => HeroesController(context));
+
+    router.route('/projects/[:id]').link(() => ProjectController(context));
 
     router.route("/example").linkFunction((request) async {
       return Response.ok({"key": "value"});
