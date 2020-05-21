@@ -31,6 +31,22 @@ class ProjectController extends ResourceController {
     return Response.ok(await _project.toJson());
   }
 
+  @Operation.delete('id')
+  Future<Response> deleteProjectByID(@Bind.path('id') String id) async {
+    final _project = ProjectDir.fromID(id);
+
+    if (!_project.exists) {
+      return Response.notFound();
+    }
+
+    await _project.directory.delete(recursive: true);
+
+    return Response.ok({
+      "id": id,
+      "status": 'deleted',
+    });
+  }
+
   @Operation.post()
   Future<Response> createProject(
       @Bind.body(ignore: ["id"]) Project inputProject) async {
