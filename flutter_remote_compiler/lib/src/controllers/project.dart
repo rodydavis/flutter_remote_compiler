@@ -3,19 +3,6 @@ import 'package:flutter_remote_compiler/src/classes/project.dart';
 import 'package:flutter_remote_compiler/src/classes/project_dir.dart';
 
 class ProjectController extends ResourceController {
-  /// Testing Purposes only
-  @Operation.get()
-  Future<Response> getAllProjects() async {
-    final _directory = Directory('generated');
-    final List<Map<String, dynamic>> _projects = [];
-    final _dirs = _directory.listSync().whereType<Directory>().toList();
-    for (final item in _dirs) {
-      final _dir = ProjectDir(item);
-      _projects.add(await _dir.toJson());
-    }
-    return Response.ok(_projects);
-  }
-
   @Operation.get('id')
   Future<Response> getProjectByID(@Bind.path('id') String id) async {
     final _project = ProjectDir.fromID(id);
@@ -25,7 +12,7 @@ class ProjectController extends ResourceController {
     }
 
     if (!(await _project.created)) {
-      await _project.create('example');
+      await _project.create(Project()..name = 'Example');
     }
 
     return Response.ok(await _project.toJson());
@@ -51,10 +38,14 @@ class ProjectController extends ResourceController {
   Future<Response> createProject(
       @Bind.body(ignore: ["id"]) Project inputProject) async {
     final _project = ProjectDir.generate();
-    await _project.create(
-      inputProject.name,
-      org: inputProject.organization,
+    await _project.create(inputProject);
+    await _project.updatePubspec(
+      dependencies: inputProject?.dependencies,
+      description: inputProject?.description,
     );
+    if (inputProject?.files != null) {
+      _project.setProjectFiles(inputProject.files);
+    }
     return Response.ok(await _project.toJson());
   }
 }

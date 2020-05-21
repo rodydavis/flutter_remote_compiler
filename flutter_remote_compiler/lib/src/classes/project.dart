@@ -1,6 +1,8 @@
 import 'package:flutter_remote_compiler/flutter_remote_compiler.dart';
 import 'package:pubspec/pubspec.dart';
 
+import 'project_file.dart';
+
 class Project extends Serializable {
   Project({
     this.id,
@@ -15,6 +17,7 @@ class Project extends Serializable {
   String organization;
   String description;
   Map<String, DependencyReference> dependencies;
+  List<ProjectFile> files;
 
   @override
   Map<String, dynamic> asMap() {
@@ -27,6 +30,7 @@ class Project extends Serializable {
         final _value = value.toJson();
         return MapEntry(key, _value);
       }),
+      'files': files?.map((e) => e.asMap())?.toList()
     };
   }
 
@@ -46,6 +50,13 @@ class Project extends Serializable {
     }
     if (object['description'] != null) {
       description = object['description'] as String;
+    }
+    if (object['files'] != null) {
+      final _list = object['files'] as List<dynamic>;
+      files = [];
+      for (final item in _list) {
+        files.add(ProjectFile()..readFromMap(item as Map<String, dynamic>));
+      }
     }
     if (object['dependencies'] != null) {
       final _json = object['dependencies'] as Map<String, dynamic>;

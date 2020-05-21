@@ -5,6 +5,7 @@ import 'package:flutter_remote_compiler/src/utils/run_command.dart';
 import 'package:pubspec/pubspec.dart';
 import 'package:shortid/shortid.dart';
 
+import 'project.dart';
 import 'project_file.dart';
 
 class ProjectDir {
@@ -49,7 +50,7 @@ class ProjectDir {
       _current = _current.copy(description: description);
     }
     if (dependencies != null) {
-      _current = _current.copy(dependencies: dependencies);
+      _current.dependencies.addAll(dependencies);
     }
     return _current.save(directory);
   }
@@ -58,9 +59,9 @@ class ProjectDir {
 
   List<FileSystemEntity> getFiles() => directory.listSync(recursive: true);
 
-  Future<void> create(String name, {String org = 'com.example'}) async {
+  Future<void> create(Project val) async {
     if (!exists) {
-      await directory.create();
+      await directory.create(recursive: true);
     }
     await runCommand(
       'flutter',
@@ -70,7 +71,7 @@ class ProjectDir {
     );
     await runCommand(
       'flutter',
-      ['create', '--project-name', name, '--org', org, '.'],
+      ['create', '--project-name', val.name, '--org', val.organization, '.'],
       verbose: true,
       workingDirectory: path,
     );
@@ -129,7 +130,7 @@ class ProjectDir {
     return File('${_dir.path}.zip');
   }
 
-  void  setProjectFiles(List<ProjectFile> files) {
+  void setProjectFiles(List<ProjectFile> files) {
     for (final file in files) {
       final _file = File('$path/${file.path}');
       if (!_file.existsSync()) {
